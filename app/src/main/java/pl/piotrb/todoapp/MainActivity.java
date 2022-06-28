@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -100,5 +103,26 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
         Intent updateData = new Intent(MainActivity.this, UpdateTodoActivity.class);
         updateData.putExtra(TODO_DATA, todoListAdapter.getTodoOnPosition(position));
         startActivityForResult(updateData, UPDATE_TASK_REQUEST);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.main_menu_notifications_button:
+                return true;
+            case R.id.main_menu_category_button:
+                return true;
+            case R.id.main_menu_tasks_button:
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
     }
 }
