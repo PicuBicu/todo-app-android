@@ -1,5 +1,7 @@
 package pl.piotrb.todoapp;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -12,17 +14,33 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.Calendar;
 
 import pl.piotrb.todoapp.database.models.Todo;
-import pl.piotrb.todoapp.databinding.ActivityAddTodoBinding;
+import pl.piotrb.todoapp.databinding.ActivityUpdateTodoBinding;
 
-public class AddTodoActivity extends AppCompatActivity {
+public class UpdateTodoActivity extends AppCompatActivity {
 
-    private ActivityAddTodoBinding binding;
+    private ActivityUpdateTodoBinding binding;
+    private Todo todo;
     private Calendar date;
+    private boolean hasDateBeenSet;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityUpdateTodoBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+        Intent updateData = getIntent();
+        if (updateData.hasExtra(MainActivity.TODO_DATA)) {
+            todo = (Todo)updateData.getSerializableExtra(MainActivity.TODO_DATA);
+            setTitle("Aktualizuj zadanie");
+        }
+        binding.activityUpdateShowDate.setOnClickListener(v -> showDateTimePicker());
+        prepareUI();
+    }
 
     public void showDateTimePicker() {
         final Calendar currentDate = Calendar.getInstance();
@@ -37,24 +55,12 @@ public class AddTodoActivity extends AppCompatActivity {
                         date.set(Calendar.HOUR_OF_DAY, hourOfDay);
                         date.set(Calendar.MINUTE, minute);
                         Log.v("APP", "The choosen one " + date.getTime());
-                        binding.activityAddDateTextView.setText(date.getTime().toString());
+                        binding.activityUpdateDeadlineDate.setText(date.getTime().toString());
+                        hasDateBeenSet = true;
                     }
                 }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), false).show();
             }
         }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityAddTodoBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-        binding.activityAddShowDateButton.setOnClickListener((v) -> {
-            showDateTimePicker();
-        });
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
-        setTitle("Dodaj zadanie");
     }
 
     @Override
@@ -68,29 +74,33 @@ public class AddTodoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.add_todo_menu_save_todo_button:
-                saveTodo();
+                updateTodo();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
     }
 
-    private void saveTodo() {
-
-        Todo todo = new Todo();
-        todo.title = binding.activityAddTodoTitle.getText() + "";
-        todo.description = binding.activityAddTodoDescription.getText() + "";
+    private void updateTodo() {
+        todo.title = binding.activityUpdateTodoTitle.getText() + "";
+        todo.description = binding.activityUpdateTodoDescription.getText() + "";
         Calendar currentTime = Calendar.getInstance();
         todo.creationDate = currentTime.getTime();
-        todo.deadlineDate = date.getTime();
-        todo.isFinished = false;
-        todo.isNotificationsEnabled = binding.activityAddTodoEnableNotificationsSwitch.isChecked();
+        todo.deadlineDate = hasDateBeenSet ? date.getTime() : todo.deadlineDate;
+        todo.isNotificationsEnabled = binding.activityUpdateTodoEnableNotificationsSwitch.isChecked();
         todo.attachmentPath = "";
-
         Intent intent = new Intent();
         intent.putExtra(MainActivity.TODO_DATA, todo);
         setResult(RESULT_OK, intent);
         finish();
+    }
 
+
+    private void prepareUI() {
+        binding.activityUpdateCreationDate.setText(todo.creationDate.toString());
+        binding.activityUpdateTodoTitle.setText(todo.title);
+        binding.activityUpdateTodoDescription.setText(todo.description);
+        binding.activityUpdateTodoEnableNotificationsSwitch.setChecked(todo.isNotificationsEnabled);
+        binding.activityUpdateDeadlineDate.setText(todo.deadlineDate.toString());
     }
 }
