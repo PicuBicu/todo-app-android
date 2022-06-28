@@ -5,6 +5,6 @@
     <item
         android:id="@+id/add_todo_menu_save_todo_button"
         android:icon="@drawable/ic_baseline_save"
-        android:title="Save"
+        android:title="Zapisz"
         app:showAsAction="ifRoom" />
 </menu>

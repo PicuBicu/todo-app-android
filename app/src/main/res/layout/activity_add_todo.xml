@@ -12,23 +12,32 @@
         android:id="@+id/activity_add_todo_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title"
+        android:hint="Tytuł"
         android:inputType="text" />
 
     <EditText
         android:id="@+id/activity_add_todo_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"
+        android:hint="Opis"
         android:inputType="textMultiLine" />
 
     <Switch
         android:id="@+id/activity_add_todo_enable_notifications_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enable notifications" />
+        android:text="Włącz / Wyłącz powiadomienia" />
 
-    <DatePicker
+    <TextView
+        android:id="@+id/date_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:hint="Ustaw czas wykonania" />
+
+    <Button
+        android:id="@+id/show_date_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ustaw czas wykonania" />
+
 </LinearLayout>
