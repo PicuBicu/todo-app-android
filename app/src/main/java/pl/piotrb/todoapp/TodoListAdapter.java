@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.Checkable;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -20,17 +22,20 @@ import java.util.List;
 
 import pl.piotrb.todoapp.database.models.Todo;
 
-public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoItemHolder> {
+public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoItemHolder> implements Filterable {
 
     private List<Todo> todoList = new ArrayList<>();
+    private List<Todo> todoListCopy;
     private OnTaskSelected onTaskSelected;
 
     public TodoListAdapter(OnTaskSelected onTaskSelected) {
         this.onTaskSelected = onTaskSelected;
+        todoListCopy = new ArrayList<>(todoList);
     }
 
     public void setTodoList(List<Todo> todoList) {
         this.todoList = todoList;
+        todoListCopy = new ArrayList<>(todoList);
         notifyDataSetChanged();
     }
 
@@ -69,6 +74,39 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
 
     public Todo getTodoOnPosition(int position) {
         return todoList.get(position);
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<Todo> filteredList = new ArrayList<>();
+                if (constraint == null || constraint.length() == 0) {
+                    filteredList.addAll(todoListCopy);
+                } else {
+                    String filterPattern = constraint.toString().toLowerCase().trim();
+                    Log.i("APP", "Filter pattern: " + filterPattern);
+                    Log.i("APP", "Filter pattern: " + todoListCopy.toString());
+                    for (Todo todo : todoListCopy) {
+                        if (todo.title.toLowerCase().contains(filterPattern)) {
+                            filteredList.add(todo);
+                        }
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = filteredList;
+                Log.i("APP", "Filtered list: " + filteredList.toString());
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                todoList.clear();
+                todoList.addAll((List) results.values);
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public static class TodoItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

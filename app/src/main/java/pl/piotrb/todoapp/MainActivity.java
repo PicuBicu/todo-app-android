@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -96,16 +97,19 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Todo todo = (Todo) data.getSerializableExtra(TODO_DATA);
-        Log.i("APP", "Todo data " + todo.toString());
-        switch (requestCode) {
-            case ADD_TASK_REQUEST:
-                saveTodo(todo);
-                break;
-            case UPDATE_TASK_REQUEST:
-                updateTodo(todo);
-                break;
+        if (data != null) {
+            Todo todo = (Todo) data.getSerializableExtra(TODO_DATA);
+            Log.i("APP", "Todo data " + todo.toString());
+            switch (requestCode) {
+                case ADD_TASK_REQUEST:
+                    saveTodo(todo);
+                    break;
+                case UPDATE_TASK_REQUEST:
+                    updateTodo(todo);
+                    break;
+            }
         }
+
     }
 
     private void updateTodo(Todo todo) {
@@ -171,6 +175,19 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
+        SearchView searchView = (SearchView)menu.findItem(R.id.main_menu_search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                todoListAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
