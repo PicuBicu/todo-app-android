@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                 }
             });
             binding.activityMainAddTodoButton.setOnClickListener(v -> {
-                Intent data = new Intent(MainActivity.this, AddTodoActivity.class);
+                Intent data = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
                 startActivityForResult(data, ADD_TASK_REQUEST);
             });
             prepareDeleteSwipe(todoListAdapter);
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
 
     @Override
     public void selectTask(int position) {
-        Intent updateData = new Intent(MainActivity.this, UpdateTodoActivity.class);
+        Intent updateData = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
         updateData.putExtra(TODO_DATA, todoListAdapter.getTodoOnPosition(position));
         startActivityForResult(updateData, UPDATE_TASK_REQUEST);
     }

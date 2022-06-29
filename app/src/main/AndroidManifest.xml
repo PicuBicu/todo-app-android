@@ -13,11 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoApp">
         <activity
-            android:parentActivityName=".MainActivity"
-            android:name=".UpdateTodoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AddTodoActivity"
+            android:name=".AddUpdateTodoActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity

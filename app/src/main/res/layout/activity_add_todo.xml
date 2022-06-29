@@ -6,48 +6,55 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="20px"
-    tools:context=".AddTodoActivity">
+    tools:context=".AddUpdateTodoActivity">
+
+    <TextView
+        android:id="@+id/activity_add_update_todo_creation_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Data utworzenia"
+        android:visibility="gone" />
 
     <EditText
-        android:id="@+id/activity_add_todo_title"
+        android:id="@+id/activity_add_update_todo_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Tytuł"
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/activity_add_todo_description"
+        android:id="@+id/activity_add_update_todo_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Opis"
         android:inputType="textMultiLine" />
 
     <Switch
-        android:id="@+id/activity_add_todo_enable_notifications_switch"
+        android:id="@+id/activity_add_update_enable_notifications"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Włącz / Wyłącz powiadomienia" />
 
     <TextView
-        android:id="@+id/activity_add_date_text_view"
+        android:id="@+id/activity_add_update_todo_deadline_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Ustaw czas wykonania" />
 
     <Button
-        android:id="@+id/activity_add_show_date_button"
+        android:id="@+id/activity_add_update_show_date_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ustaw czas wykonania" />
 
     <TextView
-        android:id="@+id/activity_add_file_text_view"
+        android:id="@+id/activity_add_update_todo_attachment_path"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Załącznik" />
 
     <Button
-        android:id="@+id/activity_add_attachment_button"
+        android:id="@+id/activity_add_update_show_attachment_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Wybierz załącznik" />
