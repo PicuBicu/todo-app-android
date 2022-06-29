@@ -1,9 +1,14 @@
 package pl.piotrb.todoapp;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,9 +16,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 
 import pl.piotrb.todoapp.database.models.Todo;
@@ -53,8 +66,63 @@ public class AddTodoActivity extends AppCompatActivity {
         binding.activityAddShowDateButton.setOnClickListener((v) -> {
             showDateTimePicker();
         });
+
+        ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Uri uri = result.getData().getData();
+                if (uri != null) {
+                    try {
+                        File sourceFile = getFileName(uri);
+                        File destinationFolder = new File(getApplicationContext().getFilesDir(), "attachments");
+                        if (!destinationFolder.exists()) {
+                            destinationFolder.mkdir();
+                        }
+                        File copiedFile = new File(destinationFolder, String.valueOf(sourceFile));
+                        InputStream inputStream = getContentResolver().openInputStream(uri);
+                        copiedFile.createNewFile();
+                        copy(inputStream, copiedFile);
+                        String pathName = copiedFile.toPath().toString();
+                        binding.activityAddFileTextView.setText(pathName);
+                    } catch (IOException e) {
+                        Toast.makeText(this, "Wystąpił problem w trakcie zapisu załącznika", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+
+        binding.activityAddAttachmentButton.setOnClickListener(v -> {
+            Intent intent = new Intent()
+                    .setType("*/*")
+                    .setAction(Intent.ACTION_GET_CONTENT);
+            startForResult.launch(intent);
+        });
+
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
         setTitle("Dodaj zadanie");
+    }
+
+    public static void copy(InputStream in, File destination) throws IOException {
+        try (OutputStream out = new FileOutputStream(destination)) {
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        }
+    }
+
+    private File getFileName(Uri uri) {
+        Cursor returnCursor = getContentResolver()
+                .query(uri, null, null, null, null);
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        try {
+            returnCursor.moveToFirst();
+            return new File(returnCursor.getString(nameIndex));
+        } finally {
+            returnCursor.close();
+        }
     }
 
     @Override
@@ -85,8 +153,7 @@ public class AddTodoActivity extends AppCompatActivity {
         todo.deadlineDate = date.getTime();
         todo.isFinished = false;
         todo.isNotificationsEnabled = binding.activityAddTodoEnableNotificationsSwitch.isChecked();
-        todo.attachmentPath = "";
-
+        todo.attachmentPath = binding.activityAddFileTextView.getText().toString();
         Intent intent = new Intent();
         intent.putExtra(MainActivity.TODO_DATA, todo);
         setResult(RESULT_OK, intent);

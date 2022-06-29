@@ -40,4 +40,16 @@
         android:layout_height="wrap_content"
         android:text="Ustaw czas wykonania" />
 
+    <TextView
+        android:id="@+id/activity_add_file_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Załącznik" />
+
+    <Button
+        android:id="@+id/activity_add_attachment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wybierz załącznik" />
+
 </LinearLayout>

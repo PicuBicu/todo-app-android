@@ -1,15 +1,8 @@
 package pl.piotrb.todoapp;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +10,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -29,10 +33,28 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     public final static String TODO_DATA = "TODO_DATA";
     private final static int ADD_TASK_REQUEST = 1;
     private final static int UPDATE_TASK_REQUEST = 2;
-
-    private TodoViewModel todoViewModel;
     private final TodoListAdapter todoListAdapter = new TodoListAdapter(this);
+    private TodoViewModel todoViewModel;
     private ActivityMainBinding binding;
+
+    private void requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) && ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, "Aby aplikacja działała poprawnie, wymagane jest ustawienie uprawnień w ustawieniach systemu", Toast.LENGTH_LONG).show();
+        }
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+    }
+
+    private boolean checkPermissions() {
+        int writePermissionResult = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPermissionResult = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        return (writePermissionResult == PackageManager.PERMISSION_GRANTED && readPermissionResult == PackageManager.PERMISSION_GRANTED);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,27 +64,34 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.recyclerView.setAdapter(todoListAdapter);
-        todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
-        todoViewModel.getAllTodos().observe(this, new Observer<List<Todo>>() {
-            @Override
-            public void onChanged(List<Todo> todos) {
-                Log.i("APP", "View model data has changed");
-                Log.i("APP", "Todos list " + todos.toString());
-                todoListAdapter.setTodoList(todos);
-            }
-        });
-        binding.activityMainAddTodoButton.setOnClickListener(v -> {
-            Intent data = new Intent(MainActivity.this, AddTodoActivity.class);
-            startActivityForResult(data, ADD_TASK_REQUEST);
-        });
-        prepareDeleteSwipe(todoListAdapter);
+        if (checkPermissions()) {
+
+            binding.recyclerView.setAdapter(todoListAdapter);
+            todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
+            todoViewModel.getAllTodos().observe(this, new Observer<List<Todo>>() {
+                @Override
+                public void onChanged(List<Todo> todos) {
+                    Log.i("APP", "View model data has changed");
+                    Log.i("APP", "Todos list " + todos.toString());
+                    todoListAdapter.setTodoList(todos);
+                }
+            });
+            binding.activityMainAddTodoButton.setOnClickListener(v -> {
+                Intent data = new Intent(MainActivity.this, AddTodoActivity.class);
+                startActivityForResult(data, ADD_TASK_REQUEST);
+            });
+            prepareDeleteSwipe(todoListAdapter);
+
+        } else {
+            requestPermission();
+
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Todo todo = (Todo)data.getSerializableExtra(TODO_DATA);
+        Todo todo = (Todo) data.getSerializableExtra(TODO_DATA);
         Log.i("APP", "Todo data " + todo.toString());
         switch (requestCode) {
             case ADD_TASK_REQUEST:
@@ -88,12 +117,13 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
+
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int taskPosition = viewHolder.getAdapterPosition();
                 Todo taskOnPosition = adapter.getTodoOnPosition(taskPosition);
                 todoViewModel.delete(taskOnPosition);
-                Toast.makeText(getApplicationContext(),"Usunięto zadanie " + taskOnPosition.title, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Usunięto zadanie " + taskOnPosition.title, Toast.LENGTH_LONG).show();
             }
         }).attachToRecyclerView(binding.recyclerView);
     }
