@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
@@ -12,12 +13,17 @@
         android:layout_height="match_parent"
         android:padding="8dp">
 
+        <CheckBox
+            android:id="@+id/todo_item_mark_as_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" />
+
         <TextView
             android:id="@+id/todo_item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/todo_item_mark_as_done"
             android:ellipsize="end"
             android:text="Title"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
@@ -27,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/todo_item_title"
-            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@id/todo_item_mark_as_done"
             android:ellipsize="end"
             android:text="Description"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
@@ -36,10 +42,21 @@
             android:id="@+id/todo_item_deadline_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            android:inputType="date"
-            android:text="TextView"
+            android:layout_below="@id/todo_item_description"
+            android:layout_toEndOf="@id/todo_item_mark_as_done"
+            android:inputType="date|datetime"
+            android:text="DeadlineDate"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <ImageButton
+            android:id="@+id/todo_item_attachment_button"
+            style="@android:style/Widget.Material.ImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="false"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_baseline_bookmark" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -3,12 +3,15 @@ package pl.piotrb.todoapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,12 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 
 import pl.piotrb.todoapp.database.models.Todo;
@@ -129,10 +134,37 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     }
 
     @Override
-    public void selectTask(int position) {
-        Intent updateData = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
-        updateData.putExtra(TODO_DATA, todoListAdapter.getTodoOnPosition(position));
-        startActivityForResult(updateData, UPDATE_TASK_REQUEST);
+    public void selectTask(View view, int position) {
+        Todo selectedTodoData = todoListAdapter.getTodoOnPosition(position);
+        switch (view.getId()) {
+            case R.id.todo_item_mark_as_done:
+                CheckBox button = (CheckBox)view;
+                markTodoAsDone(selectedTodoData, button.isChecked());
+                break;
+            case R.id.todo_item_attachment_button:
+                openAttachment(selectedTodoData);
+                break;
+            default:
+                Intent updateData = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
+                updateData.putExtra(TODO_DATA, selectedTodoData);
+                startActivityForResult(updateData, UPDATE_TASK_REQUEST);
+                break;
+        }
+    }
+
+    private void markTodoAsDone(Todo task, boolean isFinished) {
+        task.isFinished = isFinished;
+        todoViewModel.update(task);
+    }
+
+    private void openAttachment(Todo task) {
+        File file = new File(task.attachmentPath);
+        Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", file);
+        String mimeType = getContentResolver().getType(uri);
+        Intent fileViewIntent = new Intent(Intent.ACTION_VIEW);
+        fileViewIntent.setDataAndType(uri, mimeType);
+        fileViewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(fileViewIntent);
     }
 
     @Override

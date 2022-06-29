@@ -119,7 +119,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
                         copiedFile.createNewFile();
                         copy(inputStream, copiedFile);
                         String pathName = copiedFile.toPath().toString();
-                        binding.activityAddUpdateShowAttachmentDialog.setText(pathName);
+                        binding.activityAddUpdateTodoAttachmentPath.setText(pathName);
                     } catch (IOException e) {
                         Toast.makeText(this, "Wystąpił problem w trakcie zapisu załącznika", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
