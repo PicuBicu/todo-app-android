@@ -169,7 +169,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
     }
 
     private void saveTodo() {
-        if (todo != null) {
+        if (todo == null) {
             todo = new Todo();
             Calendar currentTime = Calendar.getInstance();
             todo.creationDate = currentTime.getTime();
