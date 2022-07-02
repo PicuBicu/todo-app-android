@@ -70,28 +70,27 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
         View view = binding.getRoot();
         setContentView(view);
 
-        if (checkPermissions()) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
-            binding.recyclerView.setAdapter(todoListAdapter);
-            todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
-            todoViewModel.getAllTodos().observe(this, new Observer<List<Todo>>() {
-                @Override
-                public void onChanged(List<Todo> todos) {
-                    Log.i("APP", "View model data has changed");
-                    Log.i("APP", "Todos list " + todos.toString());
-                    todoListAdapter.setTodoList(todos);
-                }
-            });
-            binding.activityMainAddTodoButton.setOnClickListener(v -> {
-                Intent data = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
-                startActivityForResult(data, ADD_TASK_REQUEST);
-            });
-            prepareDeleteSwipe(todoListAdapter);
+        binding.recyclerView.setAdapter(todoListAdapter);
+        todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
+        todoViewModel.getAllTodos().observe(this, new Observer<List<Todo>>() {
+            @Override
+            public void onChanged(List<Todo> todos) {
+                Log.i("APP", "View model data has changed");
+                Log.i("APP", "Todos list " + todos.toString());
+                todoListAdapter.setTodoList(todos);
+            }
+        });
+        binding.activityMainAddTodoButton.setOnClickListener(v -> {
+            Intent data = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
+            startActivityForResult(data, ADD_TASK_REQUEST);
+        });
+        prepareDeleteSwipe(todoListAdapter);
 
-        } else {
-            requestPermission();
-
-        }
     }
 
     @Override
