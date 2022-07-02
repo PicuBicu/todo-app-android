@@ -20,8 +20,8 @@ public class TodoRepository {
         todoList = todoDao.getAll();
     }
 
-    public void insert(Todo todo) {
-        todoDao.insert(todo);
+    public long insert(Todo todo) {
+        return todoDao.insert(todo);
     }
 
     public void delete(Todo todo) {

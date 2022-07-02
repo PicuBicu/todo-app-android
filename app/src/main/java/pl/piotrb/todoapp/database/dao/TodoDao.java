@@ -20,7 +20,7 @@ public interface TodoDao {
     LiveData<Todo> findById(Integer id);
 
     @Insert
-    void insert(Todo todo);
+    Long insert(Todo todo);
 
     @Delete
     void delete(Todo todo);

@@ -13,8 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoApp">
-        <receiver android:name=".Notification"
-            android:enabled="true"/>
+        <receiver android:name=".Notification"/>
         <activity
             android:name=".AddUpdateTodoActivity"
             android:exported="false"

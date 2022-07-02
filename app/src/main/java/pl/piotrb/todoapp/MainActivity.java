@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -38,9 +39,11 @@ import pl.piotrb.todoapp.view.TodoViewModel;
 
 public class MainActivity extends AppCompatActivity implements TodoListAdapter.OnTaskSelected {
 
+    public static final String CHANNEL_ID = "channel1";
     public final static String TODO_DATA = "TODO_DATA";
     private final static int ADD_TASK_REQUEST = 1;
     private final static int UPDATE_TASK_REQUEST = 2;
+    private static final int NOTIFICATION_ID = 1;
     private final TodoListAdapter todoListAdapter = new TodoListAdapter(this);
     private TodoViewModel todoViewModel;
     private ActivityMainBinding binding;
@@ -81,32 +84,33 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     private void initNotificationChannel() {
         String channelName = "Todo notifications channel";
         NotificationChannel channel = new NotificationChannel(
-                Notification.CHANNEL_ID,
+                CHANNEL_ID,
                 channelName,
                 NotificationManager.IMPORTANCE_DEFAULT);
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.createNotificationChannel(channel);
     }
 
-
     private void scheduleNotification(Todo todo) {
-        Intent intent = new Intent(getApplicationContext(), Notification.class);
-        intent.putExtra(Notification.TITLE, todo.title);
-        intent.putExtra(Notification.DESCRIPTION, todo.description);
+        if (todo.isNotificationsEnabled) {
+            Intent intent = new Intent(getApplicationContext(), Notification.class);
+            intent.putExtra(MainActivity.TODO_DATA, todo);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                getApplicationContext(),
-                Notification.NOTIFICATION_ID,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-        );
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    getApplicationContext(),
+                    NOTIFICATION_ID,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+            );
 
-        long timeInMillis = todo.deadlineDate.getTime();
-        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        manager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                timeInMillis,
-                pendingIntent);
+            long timeInMillis = todo.deadlineDate.getTime();
+
+            AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            scheduler.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    timeInMillis,
+                    pendingIntent);
+        }
     }
 
     @Override
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     }
 
     private void saveTodo(Todo todo) {
-        todoViewModel.insert(todo);
+        todo.id = todoViewModel.insert(todo);
     }
 
     private void prepareDeleteSwipe(TodoListAdapter adapter) {

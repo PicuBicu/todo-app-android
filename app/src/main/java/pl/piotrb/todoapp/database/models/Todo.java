@@ -11,7 +11,7 @@ import java.util.Date;
 public class Todo implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public Long id;
     public String title;
     public String description;
     @ColumnInfo(name = "creation_date")

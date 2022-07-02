@@ -24,8 +24,8 @@ public class TodoViewModel extends AndroidViewModel {
         todoList = todoRepository.getAllTodos();
     }
 
-    public void insert(Todo todo) {
-        todoRepository.insert(todo);
+    public long insert(Todo todo) {
+        return todoRepository.insert(todo);
     }
 
     public void update(Todo todo) {
