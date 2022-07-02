@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".PreferencesActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        android:layout_margin="10dp"
+
+        <EditText
+            android:id="@+id/preferences_add_category"
+            style="@style/Widget.AppCompat.AutoCompleteTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
+            android:ems="10"
+            android:hint="Nowa kategoria"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/preferences_submit_category"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Dodaj kategorie" />
+
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/preferences_is_sorting_descending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Czy sortować malejąco według daty" />
+
+    <Switch
+        android:id="@+id/preferences_hide_done_tasks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Czy wyświetlić zakończone zadania?" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Wybierz kategorie" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        android:layout_marginBottom="10dp"
+
+        <TextView
+            android:id="@+id/preferences_selected_category"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="Wybrana kategoria" />
+
+        <Spinner
+            android:id="@+id/preferences_select_category"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Czas powiadomień" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        android:layout_marginBottom="10dp"
+
+        <TextView
+            android:id="@+id/preferences_selected_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="Wybrany czas" />
+
+        <Spinner
+            android:id="@+id/preferences_select_time_for_notifications"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

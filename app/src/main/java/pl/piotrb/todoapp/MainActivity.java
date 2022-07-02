@@ -1,6 +1,7 @@
 package pl.piotrb.todoapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -18,11 +19,12 @@ import android.widget.CheckBox;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -31,7 +33,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import pl.piotrb.todoapp.database.models.Todo;
 import pl.piotrb.todoapp.databinding.ActivityMainBinding;
@@ -44,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     private final static int ADD_TASK_REQUEST = 1;
     private final static int UPDATE_TASK_REQUEST = 2;
     private static final int NOTIFICATION_ID = 1;
+    public final Settings settings = Settings.getInstance(this);
     private final TodoListAdapter todoListAdapter = new TodoListAdapter(this);
+    private ActivityResultLauncher<Intent> startForPreferences;
     private TodoViewModel todoViewModel;
     private ActivityMainBinding binding;
 
@@ -70,7 +76,20 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             public void onChanged(List<Todo> todos) {
                 Log.i("APP", "View model data has changed");
                 Log.i("APP", "Todos list " + todos.toString());
-                todoListAdapter.setTodoList(todos);
+                List<Todo> collected = todos
+                        .stream()
+                        .filter(todo -> settings.categoryName.length() > 0 && settings.categoryName.equals(todo.category))
+                        .filter(todo -> settings.hideDoneTasks && !todo.isFinished)
+                        .collect(Collectors.toList());
+                if (!settings.isSortingAscending) {
+                    collected.sort(new Comparator<Todo>() {
+                        @Override
+                        public int compare(Todo o1, Todo o2) {
+                            return o2.creationDate.compareTo(o1.creationDate);
+                        }
+                    });
+                }
+                todoListAdapter.setTodoList(collected);
             }
         });
 
@@ -79,6 +98,17 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             startActivityForResult(data, ADD_TASK_REQUEST);
         });
         prepareDeleteSwipe(todoListAdapter);
+
+        settings.readSettings();
+
+        startForPreferences = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Log.i("APP", "Prepare for saving settings");
+                settings.saveSettings();
+                Log.i("APP", "Settings saved");
+                Log.i("APP", "Settings " + settings);
+            }
+        });
     }
 
     private void initNotificationChannel() {
@@ -116,28 +146,16 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null) {
+        if (data != null && requestCode == ADD_TASK_REQUEST) {
             Todo todo = (Todo) data.getSerializableExtra(TODO_DATA);
-            Log.i("APP", "Todo data " + todo.toString());
-            switch (requestCode) {
-                case ADD_TASK_REQUEST:
-                    saveTodo(todo);
-                    break;
-                case UPDATE_TASK_REQUEST:
-                    updateTodo(todo);
-                    break;
-            }
+            todoViewModel.insert(todo);
+            scheduleNotification(todo);
+        } else if (data != null && requestCode == UPDATE_TASK_REQUEST) {
+            Todo todo = (Todo) data.getSerializableExtra(TODO_DATA);
+            todoViewModel.update(todo);
             scheduleNotification(todo);
         }
 
-    }
-
-    private void updateTodo(Todo todo) {
-        todoViewModel.update(todo);
-    }
-
-    private void saveTodo(Todo todo) {
-        todo.id = todoViewModel.insert(todo);
     }
 
     private void prepareDeleteSwipe(TodoListAdapter adapter) {
@@ -214,12 +232,11 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.main_menu_notifications_button:
-                return true;
-            case R.id.main_menu_category_button:
-                return true;
-            case R.id.main_menu_tasks_button:
-                return true;
+            case R.id.main_menu_notifications_button: {
+                Intent preferencesIntent = new Intent(this, PreferencesActivity.class);
+                startForPreferences.launch(preferencesIntent);
+            }
+            return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
         }

@@ -9,18 +9,8 @@
         app:showAsAction="always"
         app:actionViewClass="android.widget.SearchView" />
     <item
-        android:id="@+id/main_menu_category_button"
-        android:icon="@drawable/ic_baseline_more_vert"
-        android:title="Kategorie"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/main_menu_tasks_button"
-        android:icon="@drawable/ic_baseline_more_vert"
-        android:title="Ukrywanie zadań"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/main_menu_notifications_button"
         android:icon="@drawable/ic_baseline_more_vert"
-        android:title="Powiadomienia"
+        android:title="Ustawienia"
         app:showAsAction="never" />
 </menu>
