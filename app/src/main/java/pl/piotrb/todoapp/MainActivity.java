@@ -1,8 +1,12 @@
 package pl.piotrb.todoapp;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -19,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -43,32 +45,15 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     private TodoViewModel todoViewModel;
     private ActivityMainBinding binding;
 
-    private void requestPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) && ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Toast.makeText(this, "Aby aplikacja działała poprawnie, wymagane jest ustawienie uprawnień w ustawieniach systemu", Toast.LENGTH_LONG).show();
-        }
-        ActivityCompat.requestPermissions(this,
-                new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-    }
-
-    private boolean checkPermissions() {
-        int writePermissionResult = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int readPermissionResult = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        return (writePermissionResult == PackageManager.PERMISSION_GRANTED && readPermissionResult == PackageManager.PERMISSION_GRANTED);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(binding.getRoot());
+
+        initNotificationChannel();
 
         ActivityCompat.requestPermissions(this,
                 new String[]{
@@ -85,12 +70,43 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                 todoListAdapter.setTodoList(todos);
             }
         });
+
         binding.activityMainAddTodoButton.setOnClickListener(v -> {
             Intent data = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
             startActivityForResult(data, ADD_TASK_REQUEST);
         });
         prepareDeleteSwipe(todoListAdapter);
+    }
 
+    private void initNotificationChannel() {
+        String channelName = "Todo notifications channel";
+        NotificationChannel channel = new NotificationChannel(
+                Notification.CHANNEL_ID,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(channel);
+    }
+
+
+    private void scheduleNotification(Todo todo) {
+        Intent intent = new Intent(getApplicationContext(), Notification.class);
+        intent.putExtra(Notification.TITLE, todo.title);
+        intent.putExtra(Notification.DESCRIPTION, todo.description);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(),
+                Notification.NOTIFICATION_ID,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        long timeInMillis = todo.deadlineDate.getTime();
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                timeInMillis,
+                pendingIntent);
     }
 
     @Override
@@ -107,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                     updateTodo(todo);
                     break;
             }
+            scheduleNotification(todo);
         }
 
     }
@@ -141,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
         Todo selectedTodoData = todoListAdapter.getTodoOnPosition(position);
         switch (view.getId()) {
             case R.id.todo_item_mark_as_done:
-                CheckBox button = (CheckBox)view;
+                CheckBox button = (CheckBox) view;
                 markTodoAsDone(selectedTodoData, button.isChecked());
                 break;
             case R.id.todo_item_attachment_button:
@@ -174,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu, menu);
-        SearchView searchView = (SearchView)menu.findItem(R.id.main_menu_search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.main_menu_search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
