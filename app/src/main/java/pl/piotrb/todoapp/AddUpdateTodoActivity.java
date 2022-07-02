@@ -78,6 +78,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
             binding.activityAddUpdateEnableNotifications.setChecked(todo.isNotificationsEnabled);
             binding.activityAddUpdateTodoDeadlineDate.setText(todo.deadlineDate.toString());
             binding.activityAddUpdateTodoAttachmentPath.setText(todo.attachmentPath);
+            binding.activityAddUpdateCategory.setText(todo.category);
         }
     }
 
@@ -181,6 +182,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
         todo.title = binding.activityAddUpdateTodoTitle.getText() + "";
         todo.description = binding.activityAddUpdateTodoDescription.getText() + "";
         todo.deadlineDate = hasDateBeenSet ? selectedDate.getTime() : todo.deadlineDate;
+        todo.category = binding.activityAddUpdateCategory.getText() + "";
 
         Intent intent = new Intent();
         intent.putExtra(MainActivity.TODO_DATA, todo);

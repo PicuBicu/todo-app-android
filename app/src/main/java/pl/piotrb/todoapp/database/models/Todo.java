@@ -24,6 +24,7 @@ public class Todo implements Serializable {
     public boolean isNotificationsEnabled;
     @ColumnInfo(name = "attachment_path")
     public String attachmentPath;
+    public String category;
 
     @Override
     public String toString() {
@@ -36,6 +37,7 @@ public class Todo implements Serializable {
                 ", isFinished=" + isFinished +
                 ", isNotificationsEnabled=" + isNotificationsEnabled +
                 ", attachmentPath='" + attachmentPath + '\'' +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

@@ -12,7 +12,7 @@ import pl.piotrb.todoapp.database.converter.DateConverter;
 import pl.piotrb.todoapp.database.dao.TodoDao;
 import pl.piotrb.todoapp.database.models.Todo;
 
-@Database(entities = {Todo.class}, version = 1)
+@Database(entities = {Todo.class}, version = 4)
 @TypeConverters(value = {DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
