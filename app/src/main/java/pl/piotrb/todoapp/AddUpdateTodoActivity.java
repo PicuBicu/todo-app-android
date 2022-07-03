@@ -61,6 +61,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         selectedDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
                         selectedDate.set(Calendar.MINUTE, minute);
+                        selectedDate.set(Calendar.SECOND, 0);
                         Log.v("APP", "The choosen one " + selectedDate.getTime());
                         binding.activityAddUpdateTodoDeadlineDate.setText(selectedDate.getTime().toString());
                         hasDateBeenSet = true;

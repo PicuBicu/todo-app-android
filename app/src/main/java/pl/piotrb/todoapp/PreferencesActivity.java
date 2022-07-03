@@ -33,6 +33,7 @@ public class PreferencesActivity extends AppCompatActivity {
         loadFromSettings();
 
         categories.add(0, "");
+        categories.add(1, "");
         times.add(0, 0);
 
         initCategoriesSpinner(categories);
@@ -73,15 +74,15 @@ public class PreferencesActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 0) {
-                    binding.preferencesSelectedTime.setText(settings.selectedTimeInMinutes);
+                    binding.preferencesSelectedTime.setText(String.valueOf(settings.selectedTimeInMinutes));
                 } else {
-                    binding.preferencesSelectedTime.setText(times.get(i));
+                    binding.preferencesSelectedTime.setText(String.valueOf(times.get(i)));
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                binding.preferencesSelectedTime.setText(settings.selectedTimeInMinutes);
+                binding.preferencesSelectedTime.setText(String.valueOf(settings.selectedTimeInMinutes));
             }
         });
         binding.preferencesSelectTimeForNotifications.setAdapter(adapter);
@@ -89,10 +90,11 @@ public class PreferencesActivity extends AppCompatActivity {
 
     public void saveToSettings() {
         settings.categoryName = binding.preferencesSelectedCategory.getText().toString();
-        settings.selectedTimeInMinutes = binding.preferencesSelectedTime.getText().toString();
+        settings.selectedTimeInMinutes = Integer.parseInt(binding.preferencesSelectedTime.getText().toString());
         settings.isSortingDescending = binding.preferencesIsSortingDescending.isChecked();
         settings.hideDoneTasks = binding.preferencesHideDoneTasks.isChecked();
-        categories.remove(0);
+        categories.remove("");
+        categories.remove("");
         times.remove(0);
         settings.categories = categories;
         setResult(RESULT_OK, null);
@@ -101,7 +103,7 @@ public class PreferencesActivity extends AppCompatActivity {
 
     public void loadFromSettings() {
         binding.preferencesSelectedCategory.setText(settings.categoryName);
-        binding.preferencesSelectedTime.setText(settings.selectedTimeInMinutes);
+        binding.preferencesSelectedTime.setText(String.valueOf(settings.selectedTimeInMinutes));
         binding.preferencesIsSortingDescending.setChecked(settings.isSortingDescending);
         binding.preferencesHideDoneTasks.setChecked(settings.hideDoneTasks);
         categories = settings.categories;

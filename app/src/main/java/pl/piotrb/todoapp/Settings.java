@@ -23,7 +23,7 @@ public class Settings extends ContextWrapper {
     public String categoryName = "";
     public List<String> categories;
     public List<Integer> times;
-    public String selectedTimeInMinutes = "";
+    public int selectedTimeInMinutes = 0;
     public boolean hideDoneTasks = false;
 
     public Settings(Context base) {
@@ -48,7 +48,7 @@ public class Settings extends ContextWrapper {
         SharedPreferences sharedPreferences = getSharedPreferences("GLOBAL_PREFERENCES", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_KEY_CATEGORY, categoryName);
-        editor.putString(PREF_KEY_TIME, selectedTimeInMinutes);
+        editor.putInt(PREF_KEY_TIME, selectedTimeInMinutes);
         editor.putBoolean(PREF_KEY_SORTING_ORDER, isSortingDescending);
         editor.putBoolean(PREF_KEY_DISPLAYING_DONE_TASKS, hideDoneTasks);
         editor.putStringSet(PREF_KEY_SET_OF_CATEGORIES, new HashSet<>(categories));
@@ -59,7 +59,7 @@ public class Settings extends ContextWrapper {
         Log.i("APP", "Loading settings");
         SharedPreferences sharedPreferences = getSharedPreferences("GLOBAL_PREFERENCES", MODE_PRIVATE);
         categoryName = sharedPreferences.getString(PREF_KEY_CATEGORY, "");
-        selectedTimeInMinutes = sharedPreferences.getString(PREF_KEY_TIME, "");
+        selectedTimeInMinutes = sharedPreferences.getInt(PREF_KEY_TIME, 0);
         isSortingDescending = sharedPreferences.getBoolean(PREF_KEY_SORTING_ORDER, false);
         Set<String> setOfCategories = new HashSet<>();
         setOfCategories = sharedPreferences.getStringSet(PREF_KEY_SET_OF_CATEGORIES, setOfCategories);

@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
-        android:layout_margin="10dp"
 
         <EditText
             android:id="@+id/preferences_add_category"
@@ -59,7 +58,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
-        android:layout_marginBottom="10dp"
 
         <TextView
             android:id="@+id/preferences_selected_category"
@@ -86,7 +84,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
-        android:layout_marginBottom="10dp"
 
         <TextView
             android:id="@+id/preferences_selected_time"

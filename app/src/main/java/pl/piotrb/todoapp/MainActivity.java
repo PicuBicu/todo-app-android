@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                     PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
-            long timeInMillis = todo.deadlineDate.getTime();
+            long timeInMillis = todo.deadlineDate.getTime() - (settings.selectedTimeInMinutes * 60L * 1000L);
 
             AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             scheduler.setExactAndAllowWhileIdle(
