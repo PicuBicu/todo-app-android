@@ -5,10 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import pl.piotrb.todoapp.database.models.Todo;
