@@ -20,6 +20,7 @@ public class Notification extends BroadcastReceiver {
         Todo todo = (Todo) intent.getSerializableExtra(MainActivity.TODO_DATA);
         Intent addUpdateIntent = new Intent(context, AddUpdateTodoActivity.class);
         addUpdateIntent.putExtra(MainActivity.TODO_DATA, todo);
+        addUpdateIntent.putExtra("notification", true);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -94,6 +95,9 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
 
         Intent data = getIntent();
         if (data.hasExtra(MainActivity.TODO_DATA)) {
+            if (data.hasExtra("notification")) {
+                displayAsDetails();
+            }
             setTitle("Aktualizuj zadanie");
             todo = (Todo)data.getSerializableExtra(MainActivity.TODO_DATA);
             prepareUI();
@@ -128,15 +132,34 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
                 }
             }
         });
-
         binding.activityAddUpdateShowAttachmentDialog.setOnClickListener(v -> {
             Intent intent = new Intent()
                     .setType("*/*")
                     .setAction(Intent.ACTION_GET_CONTENT);
             startForResult.launch(intent);
         });
+    }
 
+    private void displayAsDetails() {
+        binding.activityAddUpdateCategory.setEnabled(false);
+        binding.activityAddUpdateTodoTitle.setEnabled(false);
+        binding.activityAddUpdateTodoDescription.setEnabled(false);
+        binding.activityAddUpdateShowDateDialog.setEnabled(false);
+        binding.activityAddUpdateShowAttachmentDialog.setOnClickListener(view -> {
+            openAttachment(todo);
+        });
+        binding.activityAddUpdateShowAttachmentDialog.setText("Wyświetl załącznik");
+        binding.activityAddUpdateEnableNotifications.setEnabled(false);
+    }
 
+    private void openAttachment(Todo task) {
+        File file = new File(task.attachmentPath);
+        Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", file);
+        String mimeType = getContentResolver().getType(uri);
+        Intent fileViewIntent = new Intent(Intent.ACTION_VIEW);
+        fileViewIntent.setDataAndType(uri, mimeType);
+        fileViewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(fileViewIntent);
     }
 
     private File getFileName(Uri uri) {
