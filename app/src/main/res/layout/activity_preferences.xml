@@ -45,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:text="Czy wyświetlić zakończone zadania?" />
+        android:text="Czy nie wyświetlać zakończonych zadań?" />
 
     <TextView
         android:id="@+id/textView2"
@@ -70,7 +70,8 @@
         <Spinner
             android:id="@+id/preferences_select_category"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:spinnerMode="dropdown"/>
     </LinearLayout>
 
     <TextView
@@ -96,7 +97,8 @@
         <Spinner
             android:id="@+id/preferences_select_time_for_notifications"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"/>
     </LinearLayout>
 
 </LinearLayout>

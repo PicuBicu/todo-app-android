@@ -1,7 +1,6 @@
 package pl.piotrb.todoapp;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,11 +27,17 @@ public class PreferencesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
+        setTitle(ACTIVITY_TITLE);
         setContentView(binding.getRoot());
+
         loadFromSettings();
+
+        categories.add(0, "");
+        times.add(0, 0);
+
         initCategoriesSpinner(categories);
         initTimesSpinner(times);
-        setTitle(ACTIVITY_TITLE);
+
         binding.preferencesSubmitCategory.setOnClickListener(view -> {
             String category = binding.preferencesAddCategory.getText().toString();
             if (!category.isEmpty()) {
@@ -47,12 +52,16 @@ public class PreferencesActivity extends AppCompatActivity {
         binding.preferencesSelectCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                binding.preferencesSelectedCategory.setText(categories.get(i));
+                if (i == 0) {
+                    binding.preferencesSelectedCategory.setText(settings.categoryName);
+                } else {
+                    binding.preferencesSelectedCategory.setText(categories.get(i));
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                binding.preferencesSelectedCategory.setText("");
+                binding.preferencesSelectedCategory.setText(settings.categoryName);
             }
         });
         binding.preferencesSelectCategory.setAdapter(adapter);
@@ -63,12 +72,16 @@ public class PreferencesActivity extends AppCompatActivity {
         binding.preferencesSelectTimeForNotifications.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                binding.preferencesSelectedTime.setText(times.get(i) + "");
+                if (i == 0) {
+                    binding.preferencesSelectedTime.setText(settings.selectedTimeInMinutes);
+                } else {
+                    binding.preferencesSelectedTime.setText(times.get(i));
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                binding.preferencesSelectedTime.setText("");
+                binding.preferencesSelectedTime.setText(settings.selectedTimeInMinutes);
             }
         });
         binding.preferencesSelectTimeForNotifications.setAdapter(adapter);
@@ -77,8 +90,10 @@ public class PreferencesActivity extends AppCompatActivity {
     public void saveToSettings() {
         settings.categoryName = binding.preferencesSelectedCategory.getText().toString();
         settings.selectedTimeInMinutes = binding.preferencesSelectedTime.getText().toString();
-        settings.isSortingAscending = binding.preferencesIsSortingDescending.isChecked();
+        settings.isSortingDescending = binding.preferencesIsSortingDescending.isChecked();
         settings.hideDoneTasks = binding.preferencesHideDoneTasks.isChecked();
+        categories.remove(0);
+        times.remove(0);
         settings.categories = categories;
         setResult(RESULT_OK, null);
         finish();
@@ -87,12 +102,11 @@ public class PreferencesActivity extends AppCompatActivity {
     public void loadFromSettings() {
         binding.preferencesSelectedCategory.setText(settings.categoryName);
         binding.preferencesSelectedTime.setText(settings.selectedTimeInMinutes);
-        binding.preferencesIsSortingDescending.setChecked(settings.isSortingAscending);
+        binding.preferencesIsSortingDescending.setChecked(settings.isSortingDescending);
         binding.preferencesHideDoneTasks.setChecked(settings.hideDoneTasks);
         categories = settings.categories;
         times = settings.times;
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
