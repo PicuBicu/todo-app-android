@@ -98,13 +98,14 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
 
         Intent data = getIntent();
         if (data.hasExtra(MainActivity.TODO_DATA)) {
-            if (data.hasExtra("notification")) {
-                displayAsDetails();
-            }
             setTitle("Aktualizuj zadanie");
             todo = (Todo)data.getSerializableExtra(MainActivity.TODO_DATA);
             old = (Todo)data.getSerializableExtra(MainActivity.OLD_DATA);
             prepareUI();
+            if (data.hasExtra("notification")) {
+                setTitle("Szczegóły zadania");
+                displayAsDetails();
+            }
         } else {
             setTitle("Dodaj zadanie");
         }
@@ -182,6 +183,9 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.add_update_todo_menu, menu);
+        if (getIntent().getBooleanExtra("notification", false)) {
+            menu.findItem(R.id.add_todo_menu_save_todo_button).setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             case R.id.todo_item_mark_as_done:
                 CheckBox button = (CheckBox) view;
                 markTodoAsDone(selectedTodoData, button.isChecked());
+                Toast.makeText(this, "Zadanie " + selectedTodoData.title + " zostało wykonane", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.todo_item_attachment_button:
                 openAttachment(selectedTodoData);
