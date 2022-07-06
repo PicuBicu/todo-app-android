@@ -67,9 +67,12 @@
 
         <Spinner
             android:id="@+id/preferences_select_category"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:spinnerMode="dropdown"/>
+            android:minHeight="50dp"
+            android:outlineSpotShadowColor="@color/black"
+            android:spinnerMode="dropdown" />
     </LinearLayout>
 
     <TextView
@@ -93,9 +96,12 @@
 
         <Spinner
             android:id="@+id/preferences_select_time_for_notifications"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"/>
+            android:minHeight="50dp"
+            android:outlineAmbientShadowColor="#AC3636"
+            android:spinnerMode="dropdown" />
     </LinearLayout>
 
 </LinearLayout>
