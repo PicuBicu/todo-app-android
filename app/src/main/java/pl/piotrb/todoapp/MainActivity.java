@@ -94,7 +94,14 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                     collected.sort(new Comparator<Todo>() {
                         @Override
                         public int compare(Todo o1, Todo o2) {
-                            return o2.creationDate.compareTo(o1.creationDate);
+                            return o2.deadlineDate.after(o1.deadlineDate) ? 1 : -1;
+                        }
+                    });
+                } else {
+                    collected.sort(new Comparator<Todo>() {
+                        @Override
+                        public int compare(Todo o1, Todo o2) {
+                            return o1.deadlineDate.after(o2.deadlineDate) ? 1 : -1;
                         }
                     });
                 }
@@ -148,7 +155,14 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                             collected.sort(new Comparator<Todo>() {
                                 @Override
                                 public int compare(Todo o1, Todo o2) {
-                                    return o2.creationDate.compareTo(o1.creationDate);
+                                    return o2.deadlineDate.after(o1.deadlineDate) ? 1 : -1;
+                                }
+                            });
+                        } else {
+                            collected.sort(new Comparator<Todo>() {
+                                @Override
+                                public int compare(Todo o1, Todo o2) {
+                                    return o1.deadlineDate.after(o2.deadlineDate) ? 1 : -1;
                                 }
                             });
                         }
