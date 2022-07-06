@@ -6,11 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Checkable;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +24,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
 
     private List<Todo> todoList = new ArrayList<>();
     private List<Todo> todoListCopy;
-    private OnTaskSelected onTaskSelected;
+    private final OnTaskSelected onTaskSelected;
 
     public TodoListAdapter(OnTaskSelected onTaskSelected) {
         this.onTaskSelected = onTaskSelected;
@@ -53,14 +51,14 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
         Todo currentTodo = todoList.get(position);
         holder.title.setText(currentTodo.title);
         holder.description.setText(currentTodo.description);
-        holder.deadlineDate.setText(currentTodo.deadlineDate.toString());
+        holder.deadlineDate.setText(currentTodo.deadlineDate != null ? currentTodo.deadlineDate.toString() : "");
         holder.markAsDoneButton.setChecked(currentTodo.isFinished);
         if (currentTodo.attachmentPath.length() > 0) {
             holder.attachmentButton.setVisibility(View.VISIBLE);
         } else {
             holder.attachmentButton.setVisibility(View.GONE);
         }
-        if (currentTodo.deadlineDate.before(new Date())) {
+        if (currentTodo.deadlineDate != null && currentTodo.deadlineDate.before(new Date())) {
             holder.deadlineDate.setTextColor(Color.parseColor("#ff0000"));
         } else {
             holder.deadlineDate.setTextColor(Color.parseColor("#00ff00"));
@@ -96,7 +94,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
                 }
                 FilterResults results = new FilterResults();
                 results.values = filteredList;
-                Log.i("APP", "Filtered list: " + filteredList.toString());
+                Log.i("APP", "Filtered list: " + filteredList);
                 return results;
             }
 
@@ -109,6 +107,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
         };
     }
 
+    public interface OnTaskSelected {
+        void selectTask(View view, int position);
+    }
+
     public static class TodoItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final TextView title;
@@ -116,7 +118,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
         private final TextView deadlineDate;
         private final CheckBox markAsDoneButton;
         private final ImageView attachmentButton;
-        private OnTaskSelected onTaskSelected;
+        private final OnTaskSelected onTaskSelected;
 
         public TodoItemHolder(View itemView, OnTaskSelected onTaskSelected) {
             super(itemView);
@@ -137,10 +139,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoIt
                 onTaskSelected.selectTask(view, getAdapterPosition());
             }
         }
-    }
-
-    public interface OnTaskSelected {
-        void selectTask(View view, int position);
     }
 
 }

@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
 
     public static final String CHANNEL_ID = "channel1";
     public final static String TODO_DATA = "TODO_DATA";
-    private static final int NOTIFICATION_ID = 1;
+    public final static String OLD_DATA = "OLD_DATA";
     public final Settings settings = Settings.getInstance(this);
     private final TodoListAdapter todoListAdapter = new TodoListAdapter(this);
     private ActivityResultLauncher<Intent> startForPreferences;
@@ -162,8 +162,12 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             if (result.getResultCode() == Activity.RESULT_OK) {
                 Log.i("APP", "Prepare for updating todo");
                 Todo todo = (Todo) result.getData().getSerializableExtra(TODO_DATA);
+                Todo old = (Todo) result.getData().getSerializableExtra(OLD_DATA);
+                if (todo.deadlineDate != null && !old.deadlineDate.equals(todo.deadlineDate)) {
+                    cancelNotification(old);
+                    scheduleNotification(todo);
+                }
                 todoViewModel.update(todo);
-                scheduleNotification(todo);
                 Log.i("APP", "Todo updated");
             }
         });
@@ -189,6 +193,22 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
         manager.createNotificationChannel(channel);
     }
 
+    private void cancelNotification(Todo todo) {
+
+        Intent intent = new Intent(getApplicationContext(), Notification.class);
+        intent.putExtra(MainActivity.TODO_DATA, todo);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(),
+                Math.toIntExact(todo.id),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        AlarmManager scheduler = (AlarmManager) getSystemService(ALARM_SERVICE);
+        scheduler.cancel(pendingIntent);
+    }
+
     private void scheduleNotification(Todo todo) {
         if (todo.isNotificationsEnabled) {
             Intent intent = new Intent(getApplicationContext(), Notification.class);
@@ -196,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     getApplicationContext(),
-                    NOTIFICATION_ID,
+                    Math.toIntExact(todo.id),
                     intent,
                     PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
@@ -222,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int taskPosition = viewHolder.getAdapterPosition();
                 Todo taskOnPosition = adapter.getTodoOnPosition(taskPosition);
+                cancelNotification(taskOnPosition);
                 todoViewModel.delete(taskOnPosition);
                 Toast.makeText(getApplicationContext(), "Usunięto zadanie " + taskOnPosition.title, Toast.LENGTH_LONG).show();
             }
@@ -242,12 +263,14 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
             default:
                 Intent updateData = new Intent(MainActivity.this, AddUpdateTodoActivity.class);
                 updateData.putExtra(TODO_DATA, selectedTodoData);
+                updateData.putExtra(OLD_DATA, selectedTodoData);
                 startForUpdateTodo.launch(updateData);
                 break;
         }
     }
 
     private void markTodoAsDone(Todo task, boolean isFinished) {
+        cancelNotification(task);
         task.isFinished = isFinished;
         todoViewModel.update(task);
     }

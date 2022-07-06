@@ -33,7 +33,7 @@ public class TodoViewModel extends AndroidViewModel {
         todoRepository.delete(todo);
     }
 
-    public LiveData<Todo> getById(int id) {
+    public LiveData<Todo> getById(long id) {
         return todoRepository.getById(id);
     }
 

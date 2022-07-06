@@ -32,7 +32,7 @@ public class TodoRepository {
         todoDao.update(todo);
     }
 
-    public LiveData<Todo> getById(int id) {
+    public LiveData<Todo> getById(long id) {
         return todoDao.findById(id);
     }
 

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Date;
 
 import pl.piotrb.todoapp.database.models.Todo;
 import pl.piotrb.todoapp.databinding.ActivityAddTodoBinding;
@@ -37,6 +38,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
     private ActivityAddTodoBinding binding;
     private Calendar selectedDate;
     private Todo todo;
+    private Todo old;
     private boolean hasDateBeenSet = false;
 
     public static void copy(InputStream in, File destination) throws IOException {
@@ -78,7 +80,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
             binding.activityAddUpdateTodoTitle.setText(todo.title);
             binding.activityAddUpdateTodoDescription.setText(todo.description);
             binding.activityAddUpdateEnableNotifications.setChecked(todo.isNotificationsEnabled);
-            binding.activityAddUpdateTodoDeadlineDate.setText(todo.deadlineDate.toString());
+            binding.activityAddUpdateTodoDeadlineDate.setText(todo.deadlineDate != null ? todo.deadlineDate.toString() : "");
             binding.activityAddUpdateTodoAttachmentPath.setText(todo.attachmentPath);
             binding.activityAddUpdateCategory.setText(todo.category);
         }
@@ -101,6 +103,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
             }
             setTitle("Aktualizuj zadanie");
             todo = (Todo)data.getSerializableExtra(MainActivity.TODO_DATA);
+            old = (Todo)data.getSerializableExtra(MainActivity.OLD_DATA);
             prepareUI();
         } else {
             setTitle("Dodaj zadanie");
@@ -193,7 +196,29 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
         }
     }
 
+    private boolean validate() {
+        if (binding.activityAddUpdateTodoTitle.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Podaj tytuł zadania", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (binding.activityAddUpdateTodoDescription.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Podaj opis zadania", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (binding.activityAddUpdateTodoDeadlineDate.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Podaj datę zakończenia zadania", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (binding.activityAddUpdateCategory.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Podaj kategorię zadania", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
     private void saveTodo() {
+
+        if (!validate()) {
+            return;
+        }
+
         if (todo == null) {
             todo = new Todo();
             Calendar currentTime = Calendar.getInstance();
@@ -202,14 +227,16 @@ public class AddUpdateTodoActivity extends AppCompatActivity {
         }
 
         todo.isNotificationsEnabled = binding.activityAddUpdateEnableNotifications.isChecked();
-        todo.attachmentPath = binding.activityAddUpdateTodoAttachmentPath.getText().toString();
+        todo.attachmentPath = binding.activityAddUpdateTodoAttachmentPath.getText().toString() + "";
         todo.title = binding.activityAddUpdateTodoTitle.getText() + "";
         todo.description = binding.activityAddUpdateTodoDescription.getText() + "";
         todo.deadlineDate = hasDateBeenSet ? selectedDate.getTime() : todo.deadlineDate;
+        todo.deadlineDate = todo.deadlineDate == null ? new Date() : todo.deadlineDate;
         todo.category = binding.activityAddUpdateCategory.getText() + "";
 
         Intent intent = new Intent();
         intent.putExtra(MainActivity.TODO_DATA, todo);
+        intent.putExtra(MainActivity.OLD_DATA, old);
         setResult(RESULT_OK, intent);
         finish();
     }

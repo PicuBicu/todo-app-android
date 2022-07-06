@@ -17,7 +17,7 @@ public interface TodoDao {
     LiveData<List<Todo>> getAll();
 
     @Query("SELECT * FROM todos WHERE id = :id")
-    LiveData<Todo> findById(Integer id);
+    LiveData<Todo> findById(Long id);
 
     @Insert
     Long insert(Todo todo);
