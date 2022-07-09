@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:isScrollContainer="false"
     android:orientation="vertical"
     android:padding="20dp"
     tools:context=".PreferencesActivity">
@@ -14,21 +16,26 @@
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/preferences_submit_category"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Dodaj" />
+
         <EditText
             android:id="@+id/preferences_add_category"
             style="@style/Widget.AppCompat.AutoCompleteTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-            android:ems="10"
-            android:hint="Nowa kategoria"
+            android:ems="9"
+            android:hint="Kategoria"
             android:inputType="textPersonName" />
 
         <Button
-            android:id="@+id/preferences_submit_category"
+            android:id="@+id/preferences_delete_category"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Dodaj kategorie" />
+            android:text="Usuń" />
 
     </LinearLayout>
 
@@ -70,7 +77,6 @@
             style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="50dp"
             android:outlineSpotShadowColor="@color/black"
             android:spinnerMode="dropdown" />
     </LinearLayout>
@@ -99,7 +105,6 @@
             style="@style/Widget.AppCompat.Spinner.Underlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
             android:outlineAmbientShadowColor="#AC3636"
             android:spinnerMode="dropdown" />
     </LinearLayout>

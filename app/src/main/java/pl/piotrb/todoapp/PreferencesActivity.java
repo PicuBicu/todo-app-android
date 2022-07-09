@@ -32,9 +32,12 @@ public class PreferencesActivity extends AppCompatActivity {
 
         loadFromSettings();
 
-        categories.add(0, "");
-        categories.add(1, "");
-        times.add(0, 0);
+        if (!categories.contains("")) {
+            categories.add(0, "");
+            categories.add(1, "");
+            times.add(0, 0);
+            times.add(1, 0);
+        }
 
         initCategoriesSpinner(categories);
         initTimesSpinner(times);
@@ -44,6 +47,14 @@ public class PreferencesActivity extends AppCompatActivity {
             if (!category.isEmpty()) {
                 categories.add(category);
                 binding.preferencesAddCategory.setText("");
+            }
+        });
+
+        binding.preferencesDeleteCategory.setOnClickListener(view -> {
+            String category = binding.preferencesAddCategory.getText().toString();
+            if (!category.isEmpty()) {
+                categories.remove(category);
+                binding.preferencesAddCategory.setText(null);
             }
         });
     }

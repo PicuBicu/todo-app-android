@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements TodoListAdapter.O
                         Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
         binding.recyclerView.setAdapter(todoListAdapter);
-        todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
+        todoViewModel = new ViewModelProvider(  this).get(TodoViewModel.class);
 
         todoViewModel.getAllTodos().observe(this, new Observer<List<Todo>>() {
             @Override
